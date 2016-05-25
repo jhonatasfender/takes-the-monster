@@ -64,10 +64,10 @@ var reset = function () {
             if (monsterReady)
                 ctx.drawImage(monsterImage, monster.x, monster.y);
             ctx.fillStyle = "rgb(250,250,250)";
-            ctx.font = "24px Helvetica";
+            ctx.font = "20px Helvetica";
             ctx.textAling = "left";
             ctx.textBaseline = "top";
-            ctx.fillText("Goblins caught: " + monstersCaught, 32, 32);
+            ctx.fillText("number of monsters captured: " + monstersCaught, 32, 32);
         },
         // The main game loop
         main = function () {
