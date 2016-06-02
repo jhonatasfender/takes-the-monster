@@ -16,7 +16,6 @@ var bkReady = false, bkImage = new Image(), mapWall, sizeWall = {'width': 32, 'h
 wall = function () {
     mapWall = new Array(), mapMonster = new Array();
     for (var i = 0; i < canvas.width; i = i + sizeWall.width) {
-        mapWall[i] = new Array();
         for (var j = 0; j < canvas.height; j = j + sizeWall.height) {
             if (i <= Math.random() * canvas.width && i >= Math.random() * canvas.height) {
                 mapWall[mapWall.length] = {'width': i, 'height': j};
@@ -66,31 +65,23 @@ var reset = function () {
     monster.x = a.w;
     monster.y = a.h;
 },
-        block = function (x, y) {
-            var retorno = true;
-            for (var i = 0; i < mapWall.length; i++) {
-                if (mapWall[i] != undefined && mapWall[i] != "") {
-                    console.log(x <= mapWall[i].width && x >= mapWall[i].width && y == mapWall[i].height);
-                    if (x <= mapWall[i].width && x >= mapWall[i].width && y == mapWall[i].height) {
-                        retorno = false;
-                    }
-                }
-            }
-            return retorno;
-        },
         // Update game ogjects
         update = function (modifier) {
-            if (38 in keysDown && hero.y > 5 && block(hero.x, hero.y)) // Player holding up
-                hero.y -= hero.speed * modifier;
-            if (40 in keysDown && hero.y < canvas.height - 32 && block(hero.x, hero.y))  // Player holding down
-                hero.y += hero.speed * modifier;
-            if (37 in keysDown && hero.x > 5 && block(hero.x, hero.y)) // Player holding left
-                hero.x -= hero.speed * modifier;
-            if (39 in keysDown && hero.x < canvas.width - 32 && block(hero.x, hero.y)) // Player holding right
-                hero.x += hero.speed * modifier;
-            if (hero.x <= (monster.x + 32) && monster.x <= (hero.x + 32) && hero.y <= (monster.y + 32) && monster.y <= (hero.y + 32)) {
-                ++monstersCaught;
-                reset();
+            for (var i = 0; i < mapWall.length; i++) {
+                if (38 in keysDown && hero.y > 5) // Player holding up
+                    hero.y -= hero.speed * modifier;
+                if (40 in keysDown && hero.y < canvas.height - 32)  // Player holding down
+                    hero.y += hero.speed * modifier;
+                if (37 in keysDown && hero.x > 5) // Player holding left
+                    hero.x -= hero.speed * modifier;
+                if (39 in keysDown && hero.x < canvas.width - 32 &&
+                        hero.x >= mapWall[i].width && hero.y <= mapWall[i].height) // Player holding right
+                    hero.x += hero.speed * modifier;
+                if (hero.x <= (monster.x + 32) && monster.x <= (hero.x + 32) && hero.y <= (monster.y + 32) && monster.y <= (hero.y + 32)) {
+                    ++monstersCaught;
+                    reset();
+                }
+                break;
             }
         },
         // Draw wverything
