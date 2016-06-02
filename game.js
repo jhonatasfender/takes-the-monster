@@ -65,13 +65,13 @@ var reset = function () {
     // Throw the monster somewhere on the screen randomly
     monster.x = a.w;
     monster.y = a.h;
-}
-,
+},
         block = function (x, y) {
             var retorno = true;
             for (var i = 0; i < mapWall.length; i++) {
                 if (mapWall[i] != undefined && mapWall[i] != "") {
-                    if (x == mapWall[i].width && y == mapWall[i].height) {
+                    console.log(x <= mapWall[i].width && x >= mapWall[i].width && y == mapWall[i].height);
+                    if (x <= mapWall[i].width && x >= mapWall[i].width && y == mapWall[i].height) {
                         retorno = false;
                     }
                 }
