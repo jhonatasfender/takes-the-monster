@@ -74,7 +74,7 @@ var reset = function () {
                     if (x == mapWall[i].width && y == mapWall[i].height) {
                         retorno = false;
                     }
-                    console.log(x + " == " + mapWall[i].width + " && " + y + " == " + mapWall[i].height);
+                    //console.log(x + " == " + mapWall[i].width + " && " + y + " == " + mapWall[i].height);
                 }
             }
             return retorno;
