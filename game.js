@@ -17,6 +17,8 @@ wall = function () {
     mapWall = new Array(), mapMonster = new Array();
     for (var i = 0; i < canvas.width; i = i + sizeWall.width) {
         for (var j = 0; j < canvas.height; j = j + sizeWall.height) {
+            ctx.fillStyle = "white";
+            ctx.fillRect(i, j.height, 2, 2);
             if (i <= Math.random() * canvas.width && i >= Math.random() * canvas.height) {
                 mapWall[mapWall.length] = {'width': i, 'height': j};
             } else {
@@ -67,16 +69,20 @@ var reset = function () {
 },
         // Update game ogjects
         update = function (modifier) {
-            for (var i = 0; i < mapWall.length; i++) {
-                if (38 in keysDown && hero.y > 5) // Player holding up
+            for (var i = 0; i < 1/*mapWall.length*/; i++) {
+                if (38 in keysDown && hero.y > 5 && hero.y > mapWall[i].height && hero.y - 32 > mapWall[i].height) // Player holding up
                     hero.y -= hero.speed * modifier;
                 if (40 in keysDown && hero.y < canvas.height - 32)  // Player holding down
                     hero.y += hero.speed * modifier;
-                if (37 in keysDown && hero.x > 5) // Player holding left
+                if (37 in keysDown && hero.x > 5 &&
+                        hero.x > mapWall[i].width && hero.x - 32 > mapWall[i].width
+                        ) // Player holding left
                     hero.x -= hero.speed * modifier;
-                if (39 in keysDown && hero.x < canvas.width - 32 &&
-                        hero.x >= mapWall[i].width && hero.y <= mapWall[i].height) // Player holding right
+                if (39 in keysDown && hero.x < canvas.width - 32) { // Player holding right
                     hero.x += hero.speed * modifier;
+                    /*console.log(mapWall[i]);
+                     console.log("x: " + hero.x + " y: " + hero.y);*/
+                }
                 if (hero.x <= (monster.x + 32) && monster.x <= (hero.x + 32) && hero.y <= (monster.y + 32) && monster.y <= (hero.y + 32)) {
                     ++monstersCaught;
                     reset();
@@ -88,14 +94,32 @@ var reset = function () {
         render = function () {
             if (bgReady)
                 ctx.drawImage(bgImage, 0, 0);
-            for (var i = 0; i < mapWall.length; i++) {
-                if (mapWall[i] != undefined)
+            for (var i = 0; i < 3/*mapWall.length*/; i++) {
+                if (mapWall[i] != undefined) {
                     ctx.drawImage(bkImage, mapWall[i].width, mapWall[i].height, sizeWall.width, sizeWall.height);
+                }
             }
             if (heroReady)
                 ctx.drawImage(heroImage, hero.x, hero.y);
             if (monsterReady)
                 ctx.drawImage(monsterImage, monster.x, monster.y);
+            for (var x = 0; x < canvas.width; x = x + sizeWall.width) {
+                for (var y = 0; y < canvas.height; y = y + sizeWall.height) {
+                    for (var i = 0; i < 3/*mapWall.length*/; i++) {
+                        if ((x > mapWall[i].width && x + 32 > mapWall[i].width &&
+                                y > mapWall[i].height && y + 32 > mapWall[i].height) ||
+                                (x < mapWall[i].width && x - 32 < mapWall[i].width /*&&
+                                        y < mapWall[i].height && y - 32 < mapWall[i].height*/)) {
+                            ctx.fillStyle = "white";
+                            ctx.font = "10px Helvetica";
+                            ctx.fillText("x: " + x, x, y + 10);
+                            ctx.fillText(" y: " + y, x, y + 20);
+                            ctx.fillStyle = "black";
+                            ctx.fillRect(x, y, 10, 10);
+                        }
+                    }
+                }
+            }
             ctx.fillStyle = "rgb(250,250,250)";
             ctx.font = "20px Helvetica";
             ctx.textAling = "left";
