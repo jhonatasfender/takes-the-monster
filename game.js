@@ -70,13 +70,23 @@ var reset = function () {
         // Update game ogjects
         update = function (modifier) {
             for (var i = 0; i < 1/*mapWall.length*/; i++) {
-                if (38 in keysDown && hero.y > 5 && hero.y > mapWall[i].height && hero.y - 32 > mapWall[i].height) // Player holding up
+                if (38 in keysDown && hero.y > 5 &&
+                        !(hero.x <= mapWall[i].width + 32 && hero.x >= mapWall[i].width &&
+                                hero.y <= mapWall[i].height && hero.y >= mapWall[i].height + 32) &&
+                        !(hero.x <= mapWall[i].width + 32 && hero.x >= mapWall[i].width - 32 &&
+                                hero.y <= mapWall[i].height + 32 && hero.y >= mapWall[i].height - 32)) // Player holding up
                     hero.y -= hero.speed * modifier;
-                if (40 in keysDown && hero.y < canvas.height - 32)  // Player holding down
+                if (40 in keysDown && hero.y < canvas.height - 32 &&
+                        !(hero.x <= mapWall[i].width + 32 && hero.x >= mapWall[i].width - 32 &&
+                                hero.y <= mapWall[i].height && hero.y >= mapWall[i].height + 32) &&
+                        !(hero.x <= mapWall[i].width + 32 &&
+                                hero.y <= mapWall[i].height + 32 && hero.y >= mapWall[i].height - 32))  // Player holding down
                     hero.y += hero.speed * modifier;
                 if (37 in keysDown && hero.x > 5 &&
-                        hero.x > mapWall[i].width && hero.x - 32 > mapWall[i].width
-                        ) // Player holding left
+                        !(hero.x <= mapWall[i].width + 32 && hero.x >= mapWall[i].width - 32 &&
+                                hero.y <= mapWall[i].height && hero.y >= mapWall[i].height + 32) &&
+                        !(hero.x <= mapWall[i].width + 32 &&
+                                hero.y <= mapWall[i].height + 32 && hero.y >= mapWall[i].height - 32)) // Player holding left
                     hero.x -= hero.speed * modifier;
                 if (39 in keysDown && hero.x < canvas.width - 32) { // Player holding right
                     hero.x += hero.speed * modifier;
@@ -94,22 +104,26 @@ var reset = function () {
         render = function () {
             if (bgReady)
                 ctx.drawImage(bgImage, 0, 0);
-            for (var i = 0; i < 3/*mapWall.length*/; i++) {
+            for (var i = 0; i < 1/*mapWall.length*/; i++) {
                 if (mapWall[i] != undefined) {
                     ctx.drawImage(bkImage, mapWall[i].width, mapWall[i].height, sizeWall.width, sizeWall.height);
                 }
             }
-            if (heroReady)
+            if (heroReady) {
                 ctx.drawImage(heroImage, hero.x, hero.y);
+                //see the dimensions of the hero
+                ctx.fillStyle = "white";
+                ctx.font = "10px Helvetica";
+                ctx.fillText("x: " + hero.x, hero.x, hero.y - 32);
+                ctx.fillText("y: " + hero.y, hero.x, hero.y + 42);
+            }
             if (monsterReady)
                 ctx.drawImage(monsterImage, monster.x, monster.y);
             for (var x = 0; x < canvas.width; x = x + sizeWall.width) {
                 for (var y = 0; y < canvas.height; y = y + sizeWall.height) {
-                    for (var i = 0; i < 3/*mapWall.length*/; i++) {
-                        if ((x > mapWall[i].width && x + 32 > mapWall[i].width &&
-                                y > mapWall[i].height && y + 32 > mapWall[i].height) ||
-                                (x < mapWall[i].width && x - 32 < mapWall[i].width /*&&
-                                        y < mapWall[i].height && y - 32 < mapWall[i].height*/)) {
+                    for (var i = 0; i < 1/*mapWall.length*/; i++) {
+                        if (x <= mapWall[i].width + 32 && x >= mapWall[i].width - 32 &&
+                                y <= mapWall[i].height + 32 && y >= mapWall[i].height - 32) {
                             ctx.fillStyle = "white";
                             ctx.font = "10px Helvetica";
                             ctx.fillText("x: " + x, x, y + 10);
