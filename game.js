@@ -69,29 +69,40 @@ var reset = function () {
 },
         // Update game ogjects
         update = function (modifier) {
-
-            for (var i = 0; i < mapWall.length; i++) {
-                var b = !(hero.x <= mapWall[i].width && hero.x >= mapWall[i].width + 32)
-                        && !(hero.y <= mapWall[i].height && hero.y >= mapWall[i].height + 32);
-                if (b) {
-                    if (38 in keysDown && hero.y > 5) // Player holding up
-                        hero.y -= hero.speed * modifier;
-                    if (40 in keysDown && hero.y < canvas.height - 32)  // Player holding down
-                        hero.y += hero.speed * modifier;
-                    if (37 in keysDown && hero.x > 5) // Player holding left
-                        hero.x -= hero.speed * modifier;
-                    if (39 in keysDown && hero.x < canvas.width - 32) { // Player holding right
-                        hero.x += hero.speed * modifier;
-                        /*console.log(mapWall[i]);
-                         console.log("x: " + hero.x + " y: " + hero.y);*/
+            var b = new Object();
+            if (38 in keysDown || 40 in keysDown || 37 in keysDown || 39 in keysDown) {
+                for (var x = 0; x < canvas.width; x = x + sizeWall.width) {
+                    for (var y = 0; y < canvas.height; y = y + sizeWall.height) {
+                        for (var i = 0; i < mapWall.length; i++) {
+                            if (x <= mapWall[i].width + 32 && x >= mapWall[i].width &&
+                                    y <= mapWall[i].height + 32 && y >= mapWall[i].height) {
+                                if (38 in keysDown && hero.y > 5 &&
+                                        hero.x <= x + 32 && hero.x >= x &&
+                                        hero.y <= y + 32 && hero.y >= y) { // Player holding up
+                                    b.up = true;
+                                }
+                                if (40 in keysDown && hero.y < canvas.height - 32) {  // Player holding down
+                                }
+                                if (37 in keysDown && hero.x > 5) { // Player holding left
+                                }
+                                if (39 in keysDown && hero.x < canvas.width - 32) { // Player holding right
+                                }
+                            }
+                        }
                     }
-                    if (hero.x <= (monster.x + 32) && monster.x <= (hero.x + 32) && hero.y <= (monster.y + 32) && monster.y <= (hero.y + 32)) {
-                        ++monstersCaught;
-                        reset();
-                    }
-                    if (b)
-                        return;
                 }
+            }
+            if (38 in keysDown && hero.y > 5 && b.up) // Player holding up
+                hero.y -= hero.speed * modifier;
+            if (40 in keysDown && hero.y < canvas.height - 32)  // Player holding down
+                hero.y += hero.speed * modifier;
+            if (37 in keysDown && hero.x > 5) // Player holding left
+                hero.x -= hero.speed * modifier;
+            if (39 in keysDown && hero.x < canvas.width - 32) // Player holding right
+                hero.x += hero.speed * modifier;
+            if (hero.x <= (monster.x + 32) && monster.x <= (hero.x + 32) && hero.y <= (monster.y + 32) && monster.y <= (hero.y + 32)) {
+                ++monstersCaught;
+                reset();
             }
         },
         // Draw wverything
@@ -121,12 +132,12 @@ var reset = function () {
                         for (var i = 0; i < mapWall.length; i++) {
                             if (x <= mapWall[i].width && x >= mapWall[i].width &&
                                     y <= mapWall[i].height && y >= mapWall[i].height) {
+                                ctx.fillStyle = "black";
+                                ctx.fillRect(x, y, 32, 32);
                                 ctx.fillStyle = "white";
                                 ctx.font = "10px Helvetica";
                                 ctx.fillText("x: " + x, x, y + 10);
                                 ctx.fillText(" y: " + y, x, y + 20);
-                                ctx.fillStyle = "black";
-                                ctx.fillRect(x, y, 10, 10);
                             }
                         }
                     }
