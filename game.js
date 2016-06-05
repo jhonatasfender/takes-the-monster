@@ -75,15 +75,17 @@ var reset = function () {
                     for (var y = 0; y < canvas.height; y = y + sizeWall.height) {
                         for (var i = 0; i < mapWall.length; i++) {
                             if (x <= mapWall[i].width + 32 && x >= mapWall[i].width &&
-                                    y <= mapWall[i].height + 32 && y >= mapWall[i].height) {
-                                if (38 in keysDown && hero.y > 5 &&
-                                        hero.x <= x + 32 && hero.x >= x &&
-                                        hero.y <= y + 32 && hero.y >= y) { // Player holding up
-                                    b.up = true;
+                                    y <= mapWall[i].height + 32 && y >= mapWall[i].height &&
+                                    hero.x <= mapWall[i].width + 32 && hero.x >= mapWall[i].width &&
+                                    hero.y <= mapWall[i].height + 32 && hero.y >= mapWall[i].height &&
+                                    hero.x <= x + 32 && hero.x >= x &&
+                                    hero.y <= y + 32 && hero.y >= y) {
+                                if (38 in keysDown && hero.y > 5) { // Player holding up
                                 }
                                 if (40 in keysDown && hero.y < canvas.height - 32) {  // Player holding down
                                 }
                                 if (37 in keysDown && hero.x > 5) { // Player holding left
+                                    b.left = true;
                                 }
                                 if (39 in keysDown && hero.x < canvas.width - 32) { // Player holding right
                                 }
@@ -92,11 +94,11 @@ var reset = function () {
                     }
                 }
             }
-            if (38 in keysDown && hero.y > 5 && b.up) // Player holding up
+            if (38 in keysDown && hero.y > 5) // Player holding up
                 hero.y -= hero.speed * modifier;
             if (40 in keysDown && hero.y < canvas.height - 32)  // Player holding down
                 hero.y += hero.speed * modifier;
-            if (37 in keysDown && hero.x > 5) // Player holding left
+            if (37 in keysDown && hero.x > 5 && b.left) // Player holding left
                 hero.x -= hero.speed * modifier;
             if (39 in keysDown && hero.x < canvas.width - 32) // Player holding right
                 hero.x += hero.speed * modifier;
