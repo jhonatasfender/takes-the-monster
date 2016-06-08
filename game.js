@@ -78,9 +78,9 @@ var reset = function () {
                         b.left = true;
                     }
                     if (39 in keysDown && hero.x < canvas.width - 32 &&
-                            !(hero.x <= mapWall[i].width && hero.x >= mapWall[i].width + 32) &&
-                            !(hero.x >= mapWall[i].width - 32 && hero.x <= mapWall[i].width &&
-                                    hero.y <= mapWall[i].height + 32 && hero.y >= mapWall[i].height - 32)) { // Player holding right
+                            !(hero.x <= mapWall[i].width + 32 && hero.x >= mapWall[i].width &&
+                                    hero.y <= mapWall[i].height + 32)) { // Player holding right
+                        console.log(mapWall[i]);
                         b.right = true;
                     }
                 }
