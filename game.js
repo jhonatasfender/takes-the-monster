@@ -12,17 +12,22 @@ canvas.width = 512;
 canvas.height = 480;
 d.body.appendChild(canvas);
 // brick
-var bkReady = false, bkImage = new Image(), mapWall, sizeWall = {'width': 32, 'height': 32}, mapMonster;
+var bkReady = false, bkImage = new Image(), mapWall = new Array(), sizeWall = {'width': 32, 'height': 32}, mapMonster = new Array();
 wall = function () {
-    mapWall = new Array(), mapMonster = new Array();
-    for (var i = 0; i < canvas.width; i = i + sizeWall.width) {
-        for (var j = 0; j < canvas.height; j = j + sizeWall.height) {
-            if (i <= Math.random() * canvas.width && i >= Math.random() * canvas.height) {
-                mapWall[mapWall.length] = {'width': canvas.width / 2, 'height': j};
-            } else {
-                mapMonster[mapMonster.length] = {w: i, h: j};
+    if (false) {
+        for (var i = 0; i < canvas.width; i = i + sizeWall.width) {
+            for (var j = 0; j < canvas.height; j = j + sizeWall.height) {
+                if (i <= Math.random() * canvas.width && i >= Math.random() * canvas.height) {
+                    mapWall[mapWall.length] = {'width': i, 'height': j};
+                } else {
+                    mapMonster[mapMonster.length] = {x: i, y: j};
+                }
             }
         }
+    } else {
+        mapWall[0] = {width: 300, height: 200};
+        mapWall[1] = {width: 300, height: 300};
+        mapMonster[0] = {x: 200, y: 200};
     }
 };
 bkImage.onload = function () {
@@ -58,9 +63,10 @@ addEventListener("keyup", function (e) {
 }, false);
 // Reset the game when the player catches a monster
 var reset = function () {
-    var a = mapMonster[Math.floor(Math.random() * mapMonster.length)], b = mapMonster[parseInt(mapMonster.length / 2) - 1];
-    hero.x = monster.x == undefined ? b.w : monster.x;
-    hero.y = monster.y == undefined ? b.h : monster.y;
+    var a = mapMonster[Math.floor(Math.random() * mapMonster.length)],
+            b = mapMonster.length - 1 == 0 ? mapMonster[mapMonster.length - 1] : mapMonster[parseInt(mapMonster.length / 2) - 1];
+    hero.x = monster.x == undefined ? b.x : monster.x;
+    hero.y = monster.y == undefined ? b.y : monster.y;
     // Throw the monster somewhere on the screen randomly
     monster.x = a.w;
     monster.y = a.h;
@@ -69,7 +75,7 @@ var reset = function () {
         update = function (modifier) {
             var b = new Object();
             if (38 in keysDown || 40 in keysDown || 37 in keysDown || 39 in keysDown) {
-                for (var i = 0; i < 2/*mapWall.length*/; i++) {
+                for (var i = 0; i < mapWall.length; i++) {
                     if (38 in keysDown && hero.y > 5) { // Player holding up
                     }
                     if (40 in keysDown && hero.y < canvas.height - 32) {  // Player holding down
@@ -78,9 +84,9 @@ var reset = function () {
                         b.left = true;
                     }
                     if (39 in keysDown && hero.x < canvas.width - 32 &&
-                            !(hero.x <= mapWall[i].width + 32 && hero.x >= mapWall[i].width &&
-                                    hero.y <= mapWall[i].height + 32)) { // Player holding right
-                        console.log(mapWall[i]);
+                            !(hero.x <= mapWall[i].width || hero.x >= mapWall[i].width + 32) &&
+                            !(hero.x >= mapWall[i].width - 32 && hero.x <= mapWall[i].width &&
+                                    hero.y <= mapWall[i].height + 32 && hero.y >= mapWall[i].height - 32)) { // Player holding right
                         b.right = true;
                     }
                 }
@@ -102,7 +108,7 @@ var reset = function () {
         render = function () {
             if (bgReady)
                 ctx.drawImage(bgImage, 0, 0);
-            for (var i = 0; i < 2/*mapWall.length*/; i++) {
+            for (var i = 0; i < mapWall.length; i++) {
                 if (mapWall[i] != undefined) {
                     ctx.drawImage(bkImage, mapWall[i].width, mapWall[i].height, sizeWall.width, sizeWall.height);
                 }
@@ -122,7 +128,7 @@ var reset = function () {
             if (true) {
                 for (var x = 0; x < canvas.width; x = x + sizeWall.width) {
                     for (var y = 0; y < canvas.height; y = y + sizeWall.height) {
-                        for (var i = 0; i < 2/*mapWall.length*/; i++) {
+                        for (var i = 0; i < mapWall.length; i++) {
                             if (x <= mapWall[i].width && x >= mapWall[i].width &&
                                     y <= mapWall[i].height && y >= mapWall[i].height) {
                                 /*ctx.fillStyle = "black";
