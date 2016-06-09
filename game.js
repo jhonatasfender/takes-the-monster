@@ -70,93 +70,83 @@ var reset = function () {
     // Throw the monster somewhere on the screen randomly
     monster.x = a.w;
     monster.y = a.h;
-},
-        // Update game ogjects
-        update = function (modifier) {
-            var b = new Object();
-            if (38 in keysDown || 40 in keysDown || 37 in keysDown || 39 in keysDown) {
+}, brick = function (x, y, move) {
+    /*!(x <= mapWall[i].width && x >= mapWall[i].width + 32) &&
+     !(x >= mapWall[i].width - 32 && x <= mapWall[i].width &&
+     y <= mapWall[i].height + 32 && y >= mapWall[i].height - 32)*/
+    var b = false;
+    for (var i = 0; i < mapWall.length; i++) {
+        if (move == 1 &&
+                (x <= mapWall[i].width || x >= mapWall[i].width + 32) &&
+                (y <= mapWall[i].height || y >= mapWall[i].height - 32)) { //right
+            //console.log(mapWall[i]);
+            b = true;
+        }
+    }
+    return b;
+}, update = function (modifier) { // Update game ogjects
+    if (38 in keysDown && hero.y > 5) // Player holding up
+        hero.y -= hero.speed * modifier;
+    if (40 in keysDown && hero.y < canvas.height - 32)  // Player holding down
+        hero.y += hero.speed * modifier;
+    if (37 in keysDown && hero.x > 5) // Player holding left
+        hero.x -= hero.speed * modifier;
+    if (39 in keysDown && hero.x < canvas.width - 32 && brick(hero.x, hero.y, 1)) // Player holding right
+        hero.x += hero.speed * modifier;
+    if (hero.x <= (monster.x + 32) && monster.x <= (hero.x + 32) && hero.y <= (monster.y + 32) && monster.y <= (hero.y + 32)) {
+        ++monstersCaught;
+        reset();
+    }
+}, render = function () {  // Draw wverything
+    if (bgReady)
+        ctx.drawImage(bgImage, 0, 0);
+    for (var i = 0; i < mapWall.length; i++) {
+        if (mapWall[i] != undefined) {
+            ctx.drawImage(bkImage, mapWall[i].width, mapWall[i].height, sizeWall.width, sizeWall.height);
+        }
+    }
+    if (heroReady) {
+        ctx.drawImage(heroImage, hero.x, hero.y);
+        //see the dimensions of the hero
+        if (true) {
+            ctx.fillStyle = "white";
+            ctx.font = "10px Helvetica";
+            ctx.fillText("x: " + hero.x, hero.x, hero.y - 32);
+            ctx.fillText("y: " + hero.y, hero.x, hero.y + 42);
+        }
+    }
+    if (monsterReady)
+        ctx.drawImage(monsterImage, monster.x, monster.y);
+    if (true) {
+        for (var x = 0; x < canvas.width; x = x + sizeWall.width) {
+            for (var y = 0; y < canvas.height; y = y + sizeWall.height) {
                 for (var i = 0; i < mapWall.length; i++) {
-                    if (38 in keysDown && hero.y > 5) { // Player holding up
-                    }
-                    if (40 in keysDown && hero.y < canvas.height - 32) {  // Player holding down
-                    }
-                    if (37 in keysDown && hero.x > 5) { // Player holding left
-                        b.left = true;
-                    }
-                    if (39 in keysDown && hero.x < canvas.width - 32 &&
-                            !(hero.x <= mapWall[i].width || hero.x >= mapWall[i].width + 32) &&
-                            !(hero.x >= mapWall[i].width - 32 && hero.x <= mapWall[i].width &&
-                                    hero.y <= mapWall[i].height + 32 && hero.y >= mapWall[i].height - 32)) { // Player holding right
-                        b.right = true;
+                    if (x <= mapWall[i].width && x >= mapWall[i].width &&
+                            y <= mapWall[i].height && y >= mapWall[i].height) {
+                        /*ctx.fillStyle = "black";
+                         ctx.fillRect(x, y, 32, 32);*/
+                        ctx.fillStyle = "white";
+                        ctx.font = "10px Helvetica";
+                        ctx.fillText("x: " + x, x, y + 10);
+                        ctx.fillText(" y: " + y, x, y + 20);
                     }
                 }
             }
-            if (38 in keysDown && hero.y > 5) // Player holding up
-                hero.y -= hero.speed * modifier;
-            if (40 in keysDown && hero.y < canvas.height - 32)  // Player holding down
-                hero.y += hero.speed * modifier;
-            if (37 in keysDown && hero.x > 5) // Player holding left
-                hero.x -= hero.speed * modifier;
-            if (39 in keysDown && hero.x < canvas.width - 32 && b.right) // Player holding right
-                hero.x += hero.speed * modifier;
-            if (hero.x <= (monster.x + 32) && monster.x <= (hero.x + 32) && hero.y <= (monster.y + 32) && monster.y <= (hero.y + 32)) {
-                ++monstersCaught;
-                reset();
-            }
-        },
-        // Draw wverything
-        render = function () {
-            if (bgReady)
-                ctx.drawImage(bgImage, 0, 0);
-            for (var i = 0; i < mapWall.length; i++) {
-                if (mapWall[i] != undefined) {
-                    ctx.drawImage(bkImage, mapWall[i].width, mapWall[i].height, sizeWall.width, sizeWall.height);
-                }
-            }
-            if (heroReady) {
-                ctx.drawImage(heroImage, hero.x, hero.y);
-                //see the dimensions of the hero
-                if (true) {
-                    ctx.fillStyle = "white";
-                    ctx.font = "10px Helvetica";
-                    ctx.fillText("x: " + hero.x, hero.x, hero.y - 32);
-                    ctx.fillText("y: " + hero.y, hero.x, hero.y + 42);
-                }
-            }
-            if (monsterReady)
-                ctx.drawImage(monsterImage, monster.x, monster.y);
-            if (true) {
-                for (var x = 0; x < canvas.width; x = x + sizeWall.width) {
-                    for (var y = 0; y < canvas.height; y = y + sizeWall.height) {
-                        for (var i = 0; i < mapWall.length; i++) {
-                            if (x <= mapWall[i].width && x >= mapWall[i].width &&
-                                    y <= mapWall[i].height && y >= mapWall[i].height) {
-                                /*ctx.fillStyle = "black";
-                                 ctx.fillRect(x, y, 32, 32);*/
-                                ctx.fillStyle = "white";
-                                ctx.font = "10px Helvetica";
-                                ctx.fillText("x: " + x, x, y + 10);
-                                ctx.fillText(" y: " + y, x, y + 20);
-                            }
-                        }
-                    }
-                }
-            }
-            ctx.fillStyle = "rgb(250,250,250)";
-            ctx.font = "20px Helvetica";
-            ctx.textAling = "left";
-            ctx.textBaseline = "top";
-            ctx.fillText("number of monsters captured: " + monstersCaught, 32, 32);
-        },
-        // The main game loop
-        main = function () {
-            var now = Date.now(), delta = now - then;
-            update(delta / 1000);
-            render();
-            then = now;
-            // Request to do this again ASAP
-            requestAnimationFrame(main);
-        },
+        }
+    }
+    ctx.fillStyle = "rgb(250,250,250)";
+    ctx.font = "20px Helvetica";
+    ctx.textAling = "left";
+    ctx.textBaseline = "top";
+    ctx.fillText("number of monsters captured: " + monstersCaught, 32, 32);
+}, main = function () {  // The main game loop
+    var now = Date.now(), delta = now - then;
+    update(delta / 1000);
+    render();
+    then = now;
+    // Request to do this again ASAP
+    requestAnimationFrame(main);
+},
         // Cross-browser support for requestAnimationFrame
         then = Date.now();
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimation || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
