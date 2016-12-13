@@ -70,28 +70,38 @@ var reset = function () {
     // Throw the monster somewhere on the screen randomly
     monster.x = a.w;
     monster.y = a.h;
-}, brick = function (x, y, move) {
+}, brick = function (x, y, keysDown) {
     /*!(x <= mapWall[i].width && x >= mapWall[i].width + 32) &&
      !(x >= mapWall[i].width - 32 && x <= mapWall[i].width &&
      y <= mapWall[i].height + 32 && y >= mapWall[i].height - 32)*/
     var b = false;
     for (var i = 0; i < mapWall.length; i++) {
-        if (move == 1 &&
-                (x <= mapWall[i].width || x >= mapWall[i].width + 32) &&
-                (y <= mapWall[i].height || y >= mapWall[i].height - 32)) { //right
-            //console.log(mapWall[i]);
+        if (38 in keysDown) {// Player holding up
+            console.log("up");
+            b = true;
+        }
+        if (40 in keysDown) { // Player holding down
+            console.log('down');
+            b = true;
+        }
+        if (37 in keysDown) { // Player holding left
+            console.log('left');
+            b = true;
+        }
+        if (39 in keysDown && ((parseInt(x) <= mapWall[i].width - 32 || parseInt(y) <= mapWall[i].height - 32) || (parseInt(x) >= mapWall[i].width && parseInt(y) >= mapWall[i].height))) { // Player holding right
+            console.log('right');
             b = true;
         }
     }
     return b;
 }, update = function (modifier) { // Update game ogjects
-    if (38 in keysDown && hero.y > 5) // Player holding up
+    if (38 in keysDown && hero.y > 5 && brick(hero.x, hero.y,keysDown)) // Player holding up
         hero.y -= hero.speed * modifier;
-    if (40 in keysDown && hero.y < canvas.height - 32)  // Player holding down
+    if (40 in keysDown && hero.y < canvas.height - 32 && brick(hero.x, hero.y,keysDown))  // Player holding down
         hero.y += hero.speed * modifier;
-    if (37 in keysDown && hero.x > 5) // Player holding left
+    if (37 in keysDown && hero.x > 5 && brick(hero.x, hero.y,keysDown)) // Player holding left
         hero.x -= hero.speed * modifier;
-    if (39 in keysDown && hero.x < canvas.width - 32 && brick(hero.x, hero.y, 1)) // Player holding right
+    if (39 in keysDown && hero.x < canvas.width - 32 && brick(hero.x, hero.y,keysDown)) // Player holding right
         hero.x += hero.speed * modifier;
     if (hero.x <= (monster.x + 32) && monster.x <= (hero.x + 32) && hero.y <= (monster.y + 32) && monster.y <= (hero.y + 32)) {
         ++monstersCaught;
