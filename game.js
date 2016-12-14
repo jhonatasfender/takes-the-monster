@@ -5,7 +5,7 @@
  */
 // Create the canvas
 var w = window, d = document, e = d.documentElement, g = d.getElementsByTagName('body')[0],
-        canvas = d.createElement("canvas"), ctx = canvas.getContext("2d");
+        canvas = d.createElement("canvas"), ctx = canvas.getContext("2d"), delta = null;
 /*canvas.width = w.innerWidth || e.clientWidth || g.clientWidth;
  canvas.height = w.innerHeight || e.clientHeight || g.clientHeight;*/
 canvas.width = 512;
@@ -70,38 +70,14 @@ var reset = function () {
     // Throw the monster somewhere on the screen randomly
     monster.x = a.w;
     monster.y = a.h;
-}, brick = function (x, y, keysDown) {
-    /*!(x <= mapWall[i].width && x >= mapWall[i].width + 32) &&
-     !(x >= mapWall[i].width - 32 && x <= mapWall[i].width &&
-     y <= mapWall[i].height + 32 && y >= mapWall[i].height - 32)*/
-    var b = false;
-    for (var i = 0; i < mapWall.length; i++) {
-        if (38 in keysDown) {// Player holding up
-            console.log("up");
-            b = true;
-        }
-        if (40 in keysDown) { // Player holding down
-            console.log('down');
-            b = true;
-        }
-        if (37 in keysDown) { // Player holding left
-            console.log('left');
-            b = true;
-        }
-        if (39 in keysDown && ((parseInt(x) <= mapWall[i].width - 32 || parseInt(y) <= mapWall[i].height - 32) || (parseInt(x) >= mapWall[i].width && parseInt(y) >= mapWall[i].height))) { // Player holding right
-            console.log('right');
-            b = true;
-        }
-    }
-    return b;
-}, update = function (modifier) { // Update game ogjects
-    if (38 in keysDown && hero.y > 5 && brick(hero.x, hero.y,keysDown)) // Player holding up
+},  update = function (modifier) { // Update game ogjects
+    if (38 in keysDown && hero.y > 5) // Player holding up
         hero.y -= hero.speed * modifier;
-    if (40 in keysDown && hero.y < canvas.height - 32 && brick(hero.x, hero.y,keysDown))  // Player holding down
+    if (40 in keysDown && hero.y < canvas.height - 32)  // Player holding down
         hero.y += hero.speed * modifier;
-    if (37 in keysDown && hero.x > 5 && brick(hero.x, hero.y,keysDown)) // Player holding left
+    if (37 in keysDown && hero.x > 5) // Player holding left
         hero.x -= hero.speed * modifier;
-    if (39 in keysDown && hero.x < canvas.width - 32 && brick(hero.x, hero.y,keysDown)) // Player holding right
+    if (39 in keysDown && hero.x < canvas.width - 32) // Player holding right
         hero.x += hero.speed * modifier;
     if (hero.x <= (monster.x + 32) && monster.x <= (hero.x + 32) && hero.y <= (monster.y + 32) && monster.y <= (hero.y + 32)) {
         ++monstersCaught;
@@ -116,8 +92,23 @@ var reset = function () {
         }
     }
     if (heroReady) {
+        for (var x = 0; x <= canvas.width; x++) {
+            for (var y = 0; y <= canvas.height; y++) {
+                if(hero.x > 300 && hero.x < 332 && hero.y > 300 && hero.y < 332 && x > 300 && x < 332 && y > 300 && y < 332) {
+                    ctx.fillStyle = "white";
+                    ctx.fillRect(x, y, 1, 1);
+                    if (38 in keysDown) // Player holding up
+                        hero.y += 1;
+                    if (40 in keysDown)  // Player holding down
+                        hero.y -= 1;
+                    if (37 in keysDown) // Player holding left
+                        hero.x += 1;
+                    if (39 in keysDown) // Player holding right
+                        hero.x -= 1;
+                }
+            }
+        }
         ctx.drawImage(heroImage, hero.x, hero.y);
-        //see the dimensions of the hero
         if (true) {
             ctx.fillStyle = "white";
             ctx.font = "10px Helvetica";
@@ -127,38 +118,22 @@ var reset = function () {
     }
     if (monsterReady)
         ctx.drawImage(monsterImage, monster.x, monster.y);
-    if (true) {
-        for (var x = 0; x < canvas.width; x = x + sizeWall.width) {
-            for (var y = 0; y < canvas.height; y = y + sizeWall.height) {
-                for (var i = 0; i < mapWall.length; i++) {
-                    if (x <= mapWall[i].width && x >= mapWall[i].width &&
-                            y <= mapWall[i].height && y >= mapWall[i].height) {
-                        /*ctx.fillStyle = "black";
-                         ctx.fillRect(x, y, 32, 32);*/
-                        ctx.fillStyle = "white";
-                        ctx.font = "10px Helvetica";
-                        ctx.fillText("x: " + x, x, y + 10);
-                        ctx.fillText(" y: " + y, x, y + 20);
-                    }
-                }
-            }
-        }
-    }
     ctx.fillStyle = "rgb(250,250,250)";
     ctx.font = "20px Helvetica";
     ctx.textAling = "left";
     ctx.textBaseline = "top";
     ctx.fillText("number of monsters captured: " + monstersCaught, 32, 32);
 }, main = function () {  // The main game loop
-    var now = Date.now(), delta = now - then;
-    update(delta / 1000);
+    var now = Date.now();
+    delta = now - then;
     render();
+    update(delta / 1000);
     then = now;
     // Request to do this again ASAP
     requestAnimationFrame(main);
 },
-        // Cross-browser support for requestAnimationFrame
-        then = Date.now();
+// Cross-browser support for requestAnimationFrame
+then = Date.now();
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimation || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 reset();
 main();
