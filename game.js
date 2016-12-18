@@ -14,13 +14,13 @@ d.body.appendChild(canvas);
 // brick
 var bkReady = false, bkImage = new Image(), mapWall = new Array(), sizeWall = {'width': 32, 'height': 32}, mapMonster = new Array();
 wall = function () {
-    if (false) {
+    if (true) {
         for (var i = 0; i < canvas.width; i = i + sizeWall.width) {
             for (var j = 0; j < canvas.height; j = j + sizeWall.height) {
                 if (i <= Math.random() * canvas.width && i >= Math.random() * canvas.height) {
-                    mapWall[mapWall.length] = {'width': i, 'height': j};
+                    mapWall[mapWall.length] = {x: i, y: j, w: 32, h: 32};
                 } else {
-                    mapMonster[mapMonster.length] = {x: i, y: j};
+                    mapMonster[mapMonster.length] = {x: i, y: j, w: 32, h: 32};
                 }
             }
         }
@@ -71,13 +71,40 @@ var reset = function () {
     monster.x = a.w;
     monster.y = a.h;
 },  update = function (modifier) { // Update game ogjects
-    if (38 in keysDown && hero.y > 5) // Player holding up
+    var c = function(i) {
+        return hero.x < mapWall[i].x - mapWall[i].w || hero.x > mapWall[i].x + mapWall[i].w || hero.y < mapWall[i].y - mapWall[i].h || hero.y > mapWall[i].y + mapWall[i].h;
+    }
+    var d = function() {
+        for (var i = 0; i < mapWall.length; i++) {
+            if(c(i) === false) {
+                if(hero.x > mapWall[i].x) {
+                    hero.x = hero.x + 1;
+                    hero.y = hero.y - 1;
+                }
+                if(hero.x < mapWall[i].x) {
+                    hero.x = hero.x - 1;
+                    hero.y = hero.y + 1;
+                }
+                if(hero.y > mapWall[i].y) {
+                    hero.x = hero.x - 1;
+                    hero.y = hero.y + 1;
+                }
+                if(hero.y < mapWall[i].y) {
+                    hero.x = hero.x + 1;
+                    hero.y = hero.y - 1;
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+    if (38 in keysDown /*&& hero.y > 5*/ && d()) // Player holding up
         hero.y -= hero.speed * modifier;
-    if (40 in keysDown && hero.y < canvas.height - 32)  // Player holding down
+    if (40 in keysDown /*&& hero.y < canvas.height - 32*/ && d())  // Player holding down
         hero.y += hero.speed * modifier;
-    if (37 in keysDown && hero.x > 5) // Player holding left
+    if (37 in keysDown /*&& hero.x > 5*/ && d()) // Player holding left
         hero.x -= hero.speed * modifier;
-    if (39 in keysDown && hero.x < canvas.width - 32) // Player holding right
+    if (39 in keysDown /*&& hero.x < canvas.width - 32*/ && d()) // Player holding right
         hero.x += hero.speed * modifier;
     if (hero.x <= (monster.x + 32) && monster.x <= (hero.x + 32) && hero.y <= (monster.y + 32) && monster.y <= (hero.y + 32)) {
         ++monstersCaught;
@@ -88,11 +115,11 @@ var reset = function () {
         ctx.drawImage(bgImage, 0, 0);
     for (var i = 0; i < mapWall.length; i++) {
         if (mapWall[i] != undefined) {
-            ctx.drawImage(bkImage, mapWall[i].width, mapWall[i].height, sizeWall.width, sizeWall.height);
+            ctx.drawImage(bkImage, mapWall[i].x, mapWall[i].y, sizeWall.width, sizeWall.height);
         }
     }
     if (heroReady) {
-        for (var x = 0; x <= canvas.width; x++) {
+        /*for (var x = 0; x <= canvas.width; x++) {
             for (var y = 0; y <= canvas.height; y++) {
                 if(hero.x > 300 && hero.x < 332 && hero.y > 300 && hero.y < 332 && x > 300 && x < 332 && y > 300 && y < 332) {
                     ctx.fillStyle = "white";
@@ -107,7 +134,7 @@ var reset = function () {
                         hero.x -= 1;
                 }
             }
-        }
+        }*/
         ctx.drawImage(heroImage, hero.x, hero.y);
         if (true) {
             ctx.fillStyle = "white";
